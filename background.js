@@ -1,13 +1,7 @@
 import * as THREE from 'three';
-
-// Create the scene
 const scene = new THREE.Scene();
-
-// Set up a camera
 const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-camera.position.z = 10; // Position the camera close for 2D effect
-
-// Set up a renderer
+camera.position.z = 10;
 const renderer = new THREE.WebGLRenderer();
 const threeBackground = document.getElementById('threeBackground');
 document.getElementById('threeBackground').appendChild(renderer.domElement);
@@ -19,9 +13,6 @@ function resizeRenderer() {
   camera.aspect = width / height;
 }
 resizeRenderer();
-
-
-// Simplex noise function for the shader
 const noiseShader = `
     vec3 mod289(vec3 x) {
       return x - floor(x * (1.0 / 289.0)) * 289.0;
@@ -60,12 +51,10 @@ const noiseShader = `
       return 130.0 * dot(m, g);
     }
 `;
-
-// Create a shader material for the trippy background with noise
 const shaderMaterial = new THREE.ShaderMaterial({
     uniforms: {
-        time: { value: 1.0 }, // Pass time to the shader for animation
-        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) } // Screen size
+        time: { value: 1.0 },
+        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) } 
     },
     vertexShader: `
         void main() {
@@ -91,22 +80,13 @@ const shaderMaterial = new THREE.ShaderMaterial({
         }
     `
 });
-
-// Create a full-screen plane geometry
 const geometry = new THREE.PlaneGeometry(2, 2);
-
-// Create the mesh using the shader material
 const trippyBackground = new THREE.Mesh(geometry, shaderMaterial);
 scene.add(trippyBackground);
-
-// Animation loop
 function animate() {
     requestAnimationFrame(animate);
     shaderMaterial.uniforms.time.value += 0.001;
-
     renderer.render(scene, camera);
 }
 animate();
-
-// Adjust for window resizing
 window.addEventListener('resize', resizeRenderer);
