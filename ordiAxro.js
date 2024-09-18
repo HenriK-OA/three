@@ -4,7 +4,7 @@ import { EffectComposer, RenderPass, EffectPass } from "postprocessing";
 import { ASCII } from '/ascii.js'
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(110, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({
 	powerPreference: "high-performance",
 	antialias: false,
@@ -18,7 +18,7 @@ const asciiEffect = new ASCII({
     cellSize: 5,
     invert: false, 
     color: "#00ff00", 
-    characters: ` .-^=*+?0#X%WM@`
+    characters: ` .-~^*†•?!|0#X%WM@`
 });
 
 let composer = new EffectComposer(renderer);
@@ -27,10 +27,10 @@ composer.addPass(new EffectPass(camera, asciiEffect));
 
 const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
 scene.add( directionalLight );
-directionalLight.position.set(0,0,2)
-const light = new THREE.AmbientLight(0xffffff, 2);
+directionalLight.position.set(2,2,2)
+const light = new THREE.AmbientLight(0xffffff, 1);
 scene.add(light);
-camera.position.z = 1.5;
+camera.position.z = 1;
 const loader = new GLTFLoader();
 let model;
 
@@ -65,7 +65,7 @@ function animate() {
     requestAnimationFrame(animate);
     composer.render(scene, camera);
     if (model) {
-        model.rotation.z += 0.01
+        model.rotation.z += 0.005
     }
 }
 
