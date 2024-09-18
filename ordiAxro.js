@@ -1,18 +1,34 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
+import { EffectComposer, RenderPass, EffectPass } from "postprocessing";
+import { ASCII } from '/ascii.js'
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({antialias:true});
+const renderer = new THREE.WebGLRenderer({
+	powerPreference: "high-performance",
+	antialias: false,
+	stencil: false,
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+const asciiEffect = new ASCII({ 
+    fontSize: 60, 
+    cellSize: 8,
+    invert: false, 
+    color: "#00ff00", 
+    characters: ` .:,'-^=*+?!|0#X%WM@`
+});
 
-const directionalLight = new THREE.DirectionalLight( 0xffffff, 100 );
+let composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new EffectPass(camera, asciiEffect));
+
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
 scene.add( directionalLight );
-directionalLight.position.set(-1,-0.5,1)
-const light = new THREE.AmbientLight(0xffffff, 0.2);
+directionalLight.position.set(0,0,2)
+const light = new THREE.AmbientLight(0xffffff, 2);
 scene.add(light);
 camera.position.z = 2.3;
 const loader = new GLTFLoader();
@@ -27,9 +43,9 @@ loader.load(
         model.traverse((object) => {
             if (object.isMesh) {
                 object.material = new THREE.MeshStandardMaterial({
-                    color: 0x00ff00, 
-                    metalness: 1,
-                    roughness: 0.1
+                    color: 0xffffff, 
+                    metalness: 0.5,
+                    roughness: 1
                 });
             }
         });
@@ -45,12 +61,11 @@ loader.load(
     
 );
 
-
 function animate() {
     requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+    composer.render(scene, camera);
     if (model) {
-        model.rotation.y +=0.005;
+        model.rotation.y += 0.005
     }
 }
 
